@@ -1,0 +1,31 @@
+select Login as user , Password as password from Quarantine_v03.TrackSession where Login = '%u'
+
+(select concat('/data/quarantine/mailstore/',client_users.client_id,'/.INBOX.%u') as home, 99 as uid, 99 as gid from spam_free_emails,client_users,client_domains where spam_free_emails.client_user_id = client_users.id and client_users.client_domain_id = client_domains.id   and client_domains.spam_free = 1  and client_users.email_address = substring_index('%u','@',1) and client_domains.name = substring_index('%u','@',-1)) union (select Home as home,99 as uid,99 as gid  FROM Quarantine_v03.TrackSession WHERE Login='%u') limit 1
+
+
+(select concat('/data/quarantine/mailstore/',client_users.client_id,'/.INBOX.%u') as home, 99 as uid, 99 as gid  from spam_free_emails,client_users,client_domains where spam_free_emails.client_user_id = client_users.id and client_users.client_domain_id = client_domains.id and client_domains.spam_free = 1   and client_users.email_address = substring_index('%u','@',1)  and client_domains.name = substring_index('%u','@',-1) and '%u' not in (select login from user_logins where login = '%u' and login_type=3)) union (select Home as home,99 as uid,99 as gid  FROM Quarantine_v03.TrackSession WHERE Login='%u') limit 1;
+
+
+
+(select concat('/data/quarantine/mailstore/',client_users.client_id,'/.INBOX.%u') as home, 99 as uid, 99 as gid 
+from spam_free_emails,client_users,client_domains,user_logins 
+where spam_free_emails.client_user_id = client_users.id 
+	and client_users.client_domain_id = client_domains.id  
+	and user_logins.external_id = client_domains.client_id 
+	and client_domains.spam_free = 1  
+	and client_users.email_address = substring_index('%u','@',1) 
+	and client_domains.name = substring_index('%u','@',-1) 
+	and user_logins.login_type=3 	
+	and user_logins.login <> '%u');
+
+
+
+select concat('/data/quarantine/mailstore/',client_users.client_id,'/.INBOX.%u') as home, 99 as uid, 99 as gid 
+from spam_free_emails,client_users,client_domains
+where spam_free_emails.client_user_id = client_users.id
+	and client_users.client_domain_id = client_domains.id
+	and client_domains.spam_free = 1  
+	and client_users.email_address = substring_index('%u','@',1) 
+	and client_domains.name = substring_index('%u','@',-1) and '%u' not in (select login from user_logins where login = '%u');
+
+	select concat('/data/quarantine/mailstore/',client_users.client_id,'/.INBOX.%u') as home, 99 as uid, 99 as gid  from spam_free_emails,client_users,client_domains where spam_free_emails.client_user_id = client_users.id and client_users.client_domain_id = client_domains.id and client_domains.spam_free = 1   and client_users.email_address = substring_index('%u','@',1)  and client_domains.name = substring_index('%u','@',-1) and '%u' not in (select login from user_logins where login = '%u' and login_type=3)
