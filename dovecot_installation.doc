@@ -1,0 +1,106 @@
+﻿Steps for Installing Dovecot:
+
+1.Super User login.
+2.Download the dovecot code (tar file).
+3.Untar that file.
+4.Go to thar untar folder
+5. ./configure --with-mysql
+6.make
+7.make install
+8.By default path of dovecot installation is /usr/local/etc/dovecot
+9.vim dovecot-sql.conf.ext
+   changes: 
+        1.add driver=mysql
+        2.connect = host=192.168.1.185 dbname=mailserve_v034 user=mailserve password=mail1234
+        3.default_pass_scheme = MD5
+        4.Insert user and password query
+10. cd conf.d
+11. vim 10-master.conf
+       change the port number
+12. vim 10-mail.conf
+       changes:
+          1.add mail location:mail_location = maildir:~/Maildir:INDEX=/indexes %h:CONTROL=/indexes%h       
+          2.Add mail_uid = 99
+                 mail_gid = 99
+          3.first_valid_uid =99
+             last_valid_uid = 99
+          4.first_valid_gid = 99
+             last_valid_gid = 99  
+13.vim 10-logging.conf
+    changes:
+    	   1.add log_path= /var/log/dovecot.log
+    	   2.add debug_log_path = /var/log/dovecot.log
+    	   3.auth_verbose = yes
+         4.mail_debug = yes
+14. vim auth-sql.conf.ext
+    changes:
+        1.In passdb add  args = /usr/local/etc/dovecot/dovecot-sql.conf.ext
+        2.In userdb add  args = /usr/local/etc/dovecot/dovecot-sql.conf.ext
+15. vim 10-ssl.conf 
+	changes:
+		ssl = no
+		ssl_cert = </etc/ssl/certs/dovecot.pem(disable)
+		ssl_key = </etc/ssl/private/dovecot.pem(disable)
+16.vim 10-auth.conf
+	changes:
+		comment:!include auth-system.conf.ext
+		uncomment:!include auth-sql.conf.ext
+
+17.Run dovecot using command
+   dovecot -c /usr/local/etc/dovecot/dovecot.conf
+
+18. telnet localhost port number
+       (port number should be the same as written in 10-master.conf file)
+
+
+
+
+
+
+
+
+
+
+
+
+
+Steps for Installing Dovecot pigeonhole
+
+   1.Super user login
+   2.Download pigeonhole code.
+   3.Untar the file
+   4.Go to the untar folder of pigeonhole
+   5./configure --prefix=/usr/local/etc/dovecot--with-dovecot=/opt/dovecot-2.2.19 
+   6.make install
+   7.Copy the three file 
+          1.20-managesieve.conf  
+          2.90-sieve.conf         
+        3.90-sieve-extprograms.conf
+     from the location of /doc/example-config/conf.d
+     to the location of /usr/local/etc/dovecot/conf.d
+
+  8.changes in following files:
+       1.vim dovecot.conf
+           add protocols=sieve
+       2. vim  20-managesieve.conf
+           Uncomment the following code
+            service managesieve-login {
+                    inet_listener sieve {
+   						 address = 127.0.0.1
+   						 port = 4190
+                      }
+
+      3.vim 90-sieve.conf
+          add in plugins section
+            sieve=~/.dovecot.sieve
+            sieve_dir=~/sieve
+      4.vim 15-lda.conf
+         add in protocol lda
+             mail_plugins = sieve
+
+      5.vim 20-lmtp.conf
+        add in protocol lmtp
+            mail_plugins = sieve
+ 9.Telnet localhost port number
+    (port number sholud be the same as written in 20-managesive.conf file)
+
