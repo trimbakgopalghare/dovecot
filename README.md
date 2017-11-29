@@ -7,6 +7,7 @@ sudo yum -y install glibc-static libstdc++-static
 sudo yum -y install glibc  
 sudo yum -y install glibc-*  
 yum install openssl-devel  
+# dovecot configuration with mysql driver  
 ./configure --with-mysql  
 
 
