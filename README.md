@@ -8,6 +8,8 @@ sudo yum -y install glibc
 sudo yum -y install glibc-*  
 yum install openssl-devel  
 # dovecot configuration with mysql driver  
+ download source code of dovecot from official site.  
+ go  to source folder and run bellow command:    
 ./configure --with-mysql  
 
 
